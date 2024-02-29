@@ -1,0 +1,1805 @@
+[
+    {
+        "id": "216db6efc0df9bc0",
+        "type": "tab",
+        "label": "INIT",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "a827fd671d6a227e",
+        "type": "tab",
+        "label": "API - ENTRY ",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "a4f5363a6474be36",
+        "type": "tab",
+        "label": "RPS",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "3ee57a9d7dc5fae7",
+        "type": "tab",
+        "label": "METRICS",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "deb89a9f64f32d7e",
+        "type": "file",
+        "z": "216db6efc0df9bc0",
+        "name": "settings",
+        "filename": "($env(\"DATAPATH\") ?  $env(\"DATAPATH\") : \"/data\") & \"/settings.js\"",
+        "filenameType": "env",
+        "appendNewline": false,
+        "createDir": false,
+        "overwriteFile": "true",
+        "encoding": "none",
+        "x": 620,
+        "y": 360,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "6cdb21940f0b28b7",
+        "type": "inject",
+        "z": "216db6efc0df9bc0",
+        "name": "Update",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 250,
+        "y": 360,
+        "wires": [
+            [
+                "55c03f8643b324ae"
+            ]
+        ]
+    },
+    {
+        "id": "55c03f8643b324ae",
+        "type": "template",
+        "z": "216db6efc0df9bc0",
+        "name": "",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "plain",
+        "template": "data = require(\"./package.json\")\n\nmodule.exports = {\n    credentialSecret: \"saashup\",\n    flowFile: \"flows.json\",\n    flowFilePretty: true,\n    adminAuth: {\n        type: \"credentials\",\n        users: [{\n            username: \"admin\",\n            password: \"$2a$08$s.NFdSn4Gm4d7gHErya//e6O8RO1/3f7TZ7zflXJ9jfFV0cI6jGwK\",\n            permissions: \"*\"\n        }]\n    },\n    /*https: {\n      key: require(\"fs\").readFileSync('/data/privkey.pem'),\n      cert: require(\"fs\").readFileSync('/data/cert.pem')\n    },\n    requireHttps: true,*/\n    httpNodeAuth: {\n        user:\"admin\",pass:\"$2a$08$s.NFdSn4Gm4d7gHErya//e6O8RO1/3f7TZ7zflXJ9jfFV0cI6jGwK\"\n    },\n    uiPort: process.env.PORT || 1880,\n    httpStatic: [\n        { path: '/usr/src/node-red/public', root: '/' },\n        { path: '/usr/src/node-red/public/doc.html', root: '/doc' },\n        { path: '/usr/src/node-red/public/openapi.yml', root: '/openapi' }\n    ],\n    httpAdminRoot: '/nodered',\n    diagnostics: {\n        enabled: true,\n        ui: true,\n    },\n    runtimeState: {\n        enabled: false,\n        ui: false,\n    },\n    logging: {\n        console: {\n            level: \"info\",\n            metrics: false,\n            audit: false,\n            handler: function(settings) {\n                return function(msg) {\n                    const level = {\n                        20: 'error',\n                        30: 'warn',\n                        40: 'info'\n                    };\n                    const lvl = \"level\" in msg ? msg.level : \"40\";\n\n                    delete msg.type;\n                    delete msg.z;\n                    delete msg.path;\n                    delete msg.name;\n                    delete msg.id;\n\n                    let line = `${data.name} level=${level[lvl]} version=${data.version}`;\n\n                    if (typeof msg.msg === 'object') {\n                        for (const key of Object.keys(msg.msg)) {\n                            line += ` ${key}=${JSON.stringify(msg.msg[key])}`;\n                        }\n                    } else {\n                        line += ` msg=` + JSON.stringify(msg.msg);\n                    }\n\n                    if (lvl <= 20) {\n                        return console.error(line);\n                    }\n\n                    return console.log(line);\n                }\n            }\n        }\n    },\n    exportGlobalContextKeys: false,\n    externalModules: {\n    },\n    editorTheme: {\n        tours: false,\n        palette: {\n        },\n        projects: {\n            enabled: false,\n            workflow: {\n                mode: \"manual\"\n            }\n        },\n        codeEditor: {\n            lib: \"monaco\",\n            options: {\n            }\n        },\n        markdownEditor: {\n            mermaid: {\n                enabled: true\n            }\n        },\n    },\n    functionExternalModules: true,\n    functionTimeout: 0,\n    functionGlobalContext: {\n    },\n    debugMaxLength: 1000,\n    mqttReconnectTime: 15000,\n    serialReconnectTime: 15000\n}\n",
+        "output": "str",
+        "x": 440,
+        "y": 360,
+        "wires": [
+            [
+                "deb89a9f64f32d7e"
+            ]
+        ]
+    },
+    {
+        "id": "7c1fed0134e0e2b7",
+        "type": "inject",
+        "z": "216db6efc0df9bc0",
+        "name": "upgrade",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 260,
+        "y": 460,
+        "wires": [
+            [
+                "f88ace255ca58e9c"
+            ]
+        ]
+    },
+    {
+        "id": "f88ace255ca58e9c",
+        "type": "http request",
+        "z": "216db6efc0df9bc0",
+        "name": "",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "https://raw.githubusercontent.com/SaaShup/netbox-docker-agent/main/flows.json",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 450,
+        "y": 460,
+        "wires": [
+            [
+                "d60b525378a25078"
+            ]
+        ]
+    },
+    {
+        "id": "d60b525378a25078",
+        "type": "file",
+        "z": "216db6efc0df9bc0",
+        "name": "upg flows",
+        "filename": "/usr/src/node-red/flows.json",
+        "filenameType": "str",
+        "appendNewline": true,
+        "createDir": false,
+        "overwriteFile": "true",
+        "encoding": "none",
+        "x": 640,
+        "y": 460,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "91e25dba31c28805",
+        "type": "http in",
+        "z": "a827fd671d6a227e",
+        "name": "",
+        "url": "/api/data",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 100,
+        "y": 180,
+        "wires": [
+            [
+                "53aaf7026e5a7cee",
+                "97c2b119c2c0d11a",
+                "59ce307082c5f7de"
+            ]
+        ]
+    },
+    {
+        "id": "e9f0354eab8d7e74",
+        "type": "http in",
+        "z": "a827fd671d6a227e",
+        "name": "",
+        "url": "/api/images/:id/:server/updateAll",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 230,
+        "y": 1140,
+        "wires": [
+            [
+                "76cc755e336a49b4"
+            ]
+        ]
+    },
+    {
+        "id": "76cc755e336a49b4",
+        "type": "change",
+        "z": "a827fd671d6a227e",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "id",
+                "pt": "msg",
+                "to": "req.params.id",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "server",
+                "pt": "msg",
+                "to": "req.params.server",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "logEvent",
+                "pt": "msg",
+                "to": "Images:POST",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "config",
+                "pt": "msg",
+                "to": "config",
+                "tot": "global"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 520,
+        "y": 1140,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "638d7280d71ba478",
+        "type": "change",
+        "z": "a827fd671d6a227e",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "dockers[msg.server].images",
+                "tot": "global"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 920,
+        "y": 1140,
+        "wires": [
+            [
+                "3c8afd4635a96a87"
+            ]
+        ]
+    },
+    {
+        "id": "3c8afd4635a96a87",
+        "type": "split",
+        "z": "a827fd671d6a227e",
+        "name": "",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "",
+        "x": 1110,
+        "y": 1140,
+        "wires": [
+            [
+                "db0793e7274f3a8a"
+            ]
+        ]
+    },
+    {
+        "id": "e2e981e6c514feb4",
+        "type": "change",
+        "z": "a827fd671d6a227e",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "url",
+                "pt": "msg",
+                "to": "\"http://localhost:1880/api/engine/\" & msg.id & \"/\" & msg.server & \"/images/create?fromImage=\" & msg.payload.RepoTags[0]",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{}",
+                "tot": "json"
+            },
+            {
+                "t": "set",
+                "p": "headers",
+                "pt": "msg",
+                "to": "{ \"x-auth-token\": msg.token }",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "method",
+                "pt": "msg",
+                "to": "POST",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 540,
+        "y": 1200,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "db0793e7274f3a8a",
+        "type": "switch",
+        "z": "a827fd671d6a227e",
+        "name": "",
+        "property": "payload.RepoTags[0]",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": ":latest$",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 170,
+        "y": 1200,
+        "wires": [
+            [
+                "eabece74968eac3b"
+            ],
+            [
+                "769b5173e23d983a"
+            ]
+        ]
+    },
+    {
+        "id": "eabece74968eac3b",
+        "type": "delay",
+        "z": "a827fd671d6a227e",
+        "name": "",
+        "pauseType": "rate",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 350,
+        "y": 1200,
+        "wires": [
+            [
+                "e2e981e6c514feb4"
+            ]
+        ]
+    },
+    {
+        "id": "769b5173e23d983a",
+        "type": "join",
+        "z": "a827fd671d6a227e",
+        "name": "",
+        "mode": "auto",
+        "build": "object",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": "false",
+        "timeout": "",
+        "count": "",
+        "reduceRight": false,
+        "x": 330,
+        "y": 1260,
+        "wires": [
+            [
+                "5559e10b283dedc4"
+            ]
+        ]
+    },
+    {
+        "id": "5559e10b283dedc4",
+        "type": "http response",
+        "z": "a827fd671d6a227e",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 530,
+        "y": 1260,
+        "wires": []
+    },
+    {
+        "id": "f200149509f2291b",
+        "type": "http in",
+        "z": "a827fd671d6a227e",
+        "name": "",
+        "url": "/api/containers/:id/:server/updateAll",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 240,
+        "y": 1340,
+        "wires": [
+            [
+                "6c9cb6aea92e4508"
+            ]
+        ]
+    },
+    {
+        "id": "6c9cb6aea92e4508",
+        "type": "change",
+        "z": "a827fd671d6a227e",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "id",
+                "pt": "msg",
+                "to": "req.params.id",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "server",
+                "pt": "msg",
+                "to": "req.params.server",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "logEvent",
+                "pt": "msg",
+                "to": "Images:POST",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "config",
+                "pt": "msg",
+                "to": "config",
+                "tot": "global"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 520,
+        "y": 1340,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "bfab342db173a4f2",
+        "type": "change",
+        "z": "a827fd671d6a227e",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "images",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "dockers[msg.server].containers",
+                "tot": "global"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 540,
+        "y": 1400,
+        "wires": [
+            [
+                "d8602976d5689ec4"
+            ]
+        ]
+    },
+    {
+        "id": "d8602976d5689ec4",
+        "type": "split",
+        "z": "a827fd671d6a227e",
+        "name": "",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "",
+        "x": 270,
+        "y": 1460,
+        "wires": [
+            [
+                "e105c9676e4cb793"
+            ]
+        ]
+    },
+    {
+        "id": "0c36f881b20c72f8",
+        "type": "change",
+        "z": "a827fd671d6a227e",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload.Image",
+                "pt": "msg",
+                "to": "images[msg.payload.ImageID]",
+                "tot": "msg"
+            },
+            {
+                "t": "delete",
+                "p": "payload.ImageID",
+                "pt": "msg"
+            },
+            {
+                "t": "set",
+                "p": "url",
+                "pt": "msg",
+                "to": "\"http://localhost:1880/api/recreate/\" & msg.id & \"/\" & msg.server & msg.payload.Names[0]",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "headers",
+                "pt": "msg",
+                "to": "{ \"x-auth-token\": msg.token }",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "method",
+                "pt": "msg",
+                "to": "PUT",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 960,
+        "y": 1460,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "a41fd3c95c962c78",
+        "type": "switch",
+        "z": "a827fd671d6a227e",
+        "name": "",
+        "property": "payload.Image",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^sha256:",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 570,
+        "y": 1460,
+        "wires": [
+            [
+                "c9d63f4e9d4877d2"
+            ],
+            [
+                "579359edf1b98950"
+            ]
+        ]
+    },
+    {
+        "id": "c9d63f4e9d4877d2",
+        "type": "delay",
+        "z": "a827fd671d6a227e",
+        "name": "",
+        "pauseType": "rate",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "10",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 780,
+        "y": 1460,
+        "wires": [
+            [
+                "0c36f881b20c72f8"
+            ]
+        ]
+    },
+    {
+        "id": "579359edf1b98950",
+        "type": "join",
+        "z": "a827fd671d6a227e",
+        "name": "",
+        "mode": "auto",
+        "build": "object",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": "false",
+        "timeout": "",
+        "count": "",
+        "reduceRight": false,
+        "x": 630,
+        "y": 1520,
+        "wires": [
+            [
+                "50858e1b88581847"
+            ]
+        ]
+    },
+    {
+        "id": "50858e1b88581847",
+        "type": "http response",
+        "z": "a827fd671d6a227e",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 810,
+        "y": 1520,
+        "wires": []
+    },
+    {
+        "id": "e105c9676e4cb793",
+        "type": "switch",
+        "z": "a827fd671d6a227e",
+        "name": "",
+        "property": "payload.State",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "running",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 410,
+        "y": 1460,
+        "wires": [
+            [
+                "a41fd3c95c962c78"
+            ],
+            [
+                "579359edf1b98950"
+            ]
+        ]
+    },
+    {
+        "id": "300c141cd74207b0",
+        "type": "change",
+        "z": "a827fd671d6a227e",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "dockers[msg.server].images",
+                "tot": "global"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 920,
+        "y": 1340,
+        "wires": [
+            [
+                "767e2b687b4f286d"
+            ]
+        ]
+    },
+    {
+        "id": "767e2b687b4f286d",
+        "type": "split",
+        "z": "a827fd671d6a227e",
+        "name": "",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "",
+        "x": 1110,
+        "y": 1340,
+        "wires": [
+            [
+                "814c2ac7247343fc"
+            ]
+        ]
+    },
+    {
+        "id": "814c2ac7247343fc",
+        "type": "change",
+        "z": "a827fd671d6a227e",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t    msg.payload.Id: $substringBefore(msg.payload.RepoDigests[0], \"@\") & \":latest\"\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 180,
+        "y": 1400,
+        "wires": [
+            [
+                "5da9867cbeeef990"
+            ]
+        ]
+    },
+    {
+        "id": "5da9867cbeeef990",
+        "type": "join",
+        "z": "a827fd671d6a227e",
+        "name": "",
+        "mode": "custom",
+        "build": "merged",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": true,
+        "timeout": "",
+        "count": "",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 370,
+        "y": 1400,
+        "wires": [
+            [
+                "bfab342db173a4f2"
+            ]
+        ]
+    },
+    {
+        "id": "53aaf7026e5a7cee",
+        "type": "http response",
+        "z": "a827fd671d6a227e",
+        "name": "",
+        "statusCode": "202",
+        "headers": {},
+        "x": 320,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "1e66075bb32499ac",
+        "type": "change",
+        "z": "a827fd671d6a227e",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "olddata",
+                "pt": "msg",
+                "to": "{ \"rps\": msg.payload.snapshots.prechange.labels[$contains(key,/rps.(.*)/)]{ $replace(key, \"rps.\", \"\"): value }, \"certificate\": msg.payload.snapshots.prechange.labels[$contains(key,/certificate.(.*)/)]{ $replace(key, \"certificate.\", \"\"): value }, \"dns\": msg.payload.snapshots.prechange.labels[$contains(key,/dns.(.*)/)]{ $replace(key, \"dns.\", \"\"): value } }",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "event",
+                "pt": "msg",
+                "to": "updated",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 860,
+        "y": 140,
+        "wires": [
+            [
+                "2d1938b2ef024288"
+            ]
+        ]
+    },
+    {
+        "id": "e93a21a6a83051a8",
+        "type": "link out",
+        "z": "a827fd671d6a227e",
+        "name": "link out 1",
+        "mode": "link",
+        "links": [
+            "e1a2f7468db72845"
+        ],
+        "x": 1355,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "97c2b119c2c0d11a",
+        "type": "debug",
+        "z": "a827fd671d6a227e",
+        "name": "debug 1",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 340,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "59ce307082c5f7de",
+        "type": "switch",
+        "z": "a827fd671d6a227e",
+        "name": "",
+        "property": "payload.event",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "updated",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "created",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 350,
+        "y": 180,
+        "wires": [
+            [
+                "0a41a7290cad38c5"
+            ],
+            [
+                "2d1938b2ef024288"
+            ]
+        ]
+    },
+    {
+        "id": "2d1938b2ef024288",
+        "type": "change",
+        "z": "a827fd671d6a227e",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "data",
+                "pt": "msg",
+                "to": "{ \"rps\": msg.payload.data.labels[$contains(key,/rps.(.*)/)]{ $replace(key, \"rps.\", \"\"): value }, \"certificate\": msg.payload.data.labels[$contains(key,/certificate.(.*)/)]{ $replace(key, \"certificate.\", \"\"): value }, \"dns\": msg.payload.data.labels[$contains(key,/dns.(.*)/)]{ $replace(key, \"dns.\", \"\"): value } }",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1170,
+        "y": 280,
+        "wires": [
+            [
+                "e93a21a6a83051a8"
+            ]
+        ]
+    },
+    {
+        "id": "0a41a7290cad38c5",
+        "type": "switch",
+        "z": "a827fd671d6a227e",
+        "name": "",
+        "property": "payload.snapshots.prechange.labels",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "nempty"
+            },
+            {
+                "t": "empty"
+            },
+            {
+                "t": "null"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 3,
+        "x": 570,
+        "y": 140,
+        "wires": [
+            [
+                "1e66075bb32499ac"
+            ],
+            [
+                "2a0170ba85106fff"
+            ],
+            [
+                "2a0170ba85106fff"
+            ]
+        ]
+    },
+    {
+        "id": "2a0170ba85106fff",
+        "type": "change",
+        "z": "a827fd671d6a227e",
+        "name": "set msg.event",
+        "rules": [
+            {
+                "t": "set",
+                "p": "event",
+                "pt": "msg",
+                "to": "created",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 860,
+        "y": 200,
+        "wires": [
+            [
+                "2d1938b2ef024288"
+            ]
+        ]
+    },
+    {
+        "id": "e1a2f7468db72845",
+        "type": "link in",
+        "z": "a4f5363a6474be36",
+        "name": "RPS",
+        "links": [
+            "e93a21a6a83051a8"
+        ],
+        "x": 25,
+        "y": 200,
+        "wires": [
+            [
+                "3d75f8d987d37282"
+            ]
+        ]
+    },
+    {
+        "id": "5bb350843162a5a6",
+        "type": "http request",
+        "z": "a4f5363a6474be36",
+        "name": "",
+        "method": "use",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 1830,
+        "y": 160,
+        "wires": [
+            [
+                "6e52b4861ef1edcc"
+            ]
+        ]
+    },
+    {
+        "id": "afa36551c6faa26e",
+        "type": "change",
+        "z": "a4f5363a6474be36",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "oldata.rps",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 600,
+        "y": 140,
+        "wires": [
+            [
+                "a49654cb0f2eaa6f",
+                "69d42ec26cf515f4"
+            ]
+        ]
+    },
+    {
+        "id": "bcf53fac734228bb",
+        "type": "http request",
+        "z": "a4f5363a6474be36",
+        "name": "",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [
+            {
+                "keyType": "Authorization",
+                "keyValue": "",
+                "valueType": "other",
+                "valueValue": "Token 14a374769b2e75d95d2b7e5d793a4b106e99e4ca"
+            }
+        ],
+        "x": 970,
+        "y": 140,
+        "wires": [
+            [
+                "4766c8f32b21c870",
+                "5af7036f55159bba"
+            ]
+        ]
+    },
+    {
+        "id": "a49654cb0f2eaa6f",
+        "type": "change",
+        "z": "a4f5363a6474be36",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "url",
+                "pt": "msg",
+                "to": "$env('NETBOX_URL') & '/api/plugins/rps/mapping?source=' & msg.payload.source",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "headers",
+                "pt": "msg",
+                "to": "{\t    \"Authorization\": \"Token \" & $env('NETBOX_TOKEN'),\t    \"Accept\": \"application/json\"\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 800,
+        "y": 140,
+        "wires": [
+            [
+                "bcf53fac734228bb"
+            ]
+        ]
+    },
+    {
+        "id": "4766c8f32b21c870",
+        "type": "switch",
+        "z": "a4f5363a6474be36",
+        "name": "",
+        "property": "payload.count",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "gt",
+                "v": "0",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "0",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1150,
+        "y": 140,
+        "wires": [
+            [
+                "cbb1a64791f4c267"
+            ],
+            [
+                "ec76364c019b835d"
+            ]
+        ]
+    },
+    {
+        "id": "cbb1a64791f4c267",
+        "type": "change",
+        "z": "a4f5363a6474be36",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "url",
+                "pt": "msg",
+                "to": "global.config.netbox_url & 'api/plugins/rps/mapping' & msg.payload.results[0].id",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "method",
+                "pt": "msg",
+                "to": "PATCH",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1360,
+        "y": 160,
+        "wires": [
+            [
+                "4502c0b7b74d0b1d"
+            ]
+        ]
+    },
+    {
+        "id": "ec76364c019b835d",
+        "type": "change",
+        "z": "a4f5363a6474be36",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "url",
+                "pt": "msg",
+                "to": "$env('NETBOX_URL') & '/api/plugins/rps/mapping'",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "method",
+                "pt": "msg",
+                "to": "POST",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1360,
+        "y": 240,
+        "wires": [
+            [
+                "4502c0b7b74d0b1d",
+                "7be65d3cb7a564f9"
+            ]
+        ]
+    },
+    {
+        "id": "4502c0b7b74d0b1d",
+        "type": "change",
+        "z": "a4f5363a6474be36",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "rps",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "headers",
+                "pt": "msg",
+                "to": "{     \"Authorization\": \"Token \" & $env('NETBOX_TOKEN'),     \"Content-Type\": \"application/json\" }",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1640,
+        "y": 160,
+        "wires": [
+            [
+                "5bb350843162a5a6"
+            ]
+        ]
+    },
+    {
+        "id": "33944d08df09af81",
+        "type": "switch",
+        "z": "a4f5363a6474be36",
+        "name": "",
+        "property": "event",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "updated",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "created",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 490,
+        "y": 200,
+        "wires": [
+            [
+                "afa36551c6faa26e",
+                "a1735cb1248bc0e7"
+            ],
+            [
+                "ec76364c019b835d",
+                "a1735cb1248bc0e7"
+            ]
+        ]
+    },
+    {
+        "id": "a1735cb1248bc0e7",
+        "type": "debug",
+        "z": "a4f5363a6474be36",
+        "name": "debug 2",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 200,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "6e52b4861ef1edcc",
+        "type": "link out",
+        "z": "a4f5363a6474be36",
+        "name": "link out 2",
+        "mode": "link",
+        "links": [
+            "36f439d2ba0ac71a"
+        ],
+        "x": 2015,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "3d75f8d987d37282",
+        "type": "change",
+        "z": "a4f5363a6474be36",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "rps",
+                "pt": "msg",
+                "to": "data.rps",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 330,
+        "y": 200,
+        "wires": [
+            [
+                "33944d08df09af81"
+            ]
+        ]
+    },
+    {
+        "id": "5af7036f55159bba",
+        "type": "debug",
+        "z": "a4f5363a6474be36",
+        "name": "debug 3",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 920,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "69d42ec26cf515f4",
+        "type": "debug",
+        "z": "a4f5363a6474be36",
+        "name": "debug 4",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 740,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "7be65d3cb7a564f9",
+        "type": "debug",
+        "z": "a4f5363a6474be36",
+        "name": "debug 5",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1540,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "788067a8780c7835",
+        "type": "http in",
+        "z": "3ee57a9d7dc5fae7",
+        "name": "",
+        "url": "/metrics",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 270,
+        "y": 340,
+        "wires": [
+            [
+                "73888c186762494e"
+            ]
+        ]
+    },
+    {
+        "id": "990b1773880e3b7d",
+        "type": "template",
+        "z": "3ee57a9d7dc5fae7",
+        "name": "Parse Containers Output and Transform to Prometheus",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "# HELP netbox_docker_agent_netbox_error_response Show the netbox error response counter\n# TYPE netbox_docker_agent_netbox_error_response counter\nnetbox_data_agent_netbox_error_response{} {{global.errorCounter}}",
+        "output": "str",
+        "x": 720,
+        "y": 120,
+        "wires": [
+            [
+                "cdecbe9f078ed45b"
+            ]
+        ]
+    },
+    {
+        "id": "cdecbe9f078ed45b",
+        "type": "change",
+        "z": "3ee57a9d7dc5fae7",
+        "name": "",
+        "rules": [
+            {
+                "t": "change",
+                "p": "payload",
+                "pt": "msg",
+                "from": "name=\"/",
+                "fromt": "str",
+                "to": "name=\"",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "metricPayload",
+                "pt": "global",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1080,
+        "y": 160,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "2f954b0ac225c1ed",
+        "type": "inject",
+        "z": "3ee57a9d7dc5fae7",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "5",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 190,
+        "y": 80,
+        "wires": [
+            [
+                "990b1773880e3b7d"
+            ]
+        ]
+    },
+    {
+        "id": "cb3f2dc534bf1c31",
+        "type": "http response",
+        "z": "3ee57a9d7dc5fae7",
+        "name": "",
+        "statusCode": "",
+        "headers": {
+            "content-type": "text/plain"
+        },
+        "x": 670,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "73888c186762494e",
+        "type": "change",
+        "z": "3ee57a9d7dc5fae7",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "metricPayload",
+                "tot": "global"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 480,
+        "y": 340,
+        "wires": [
+            [
+                "cb3f2dc534bf1c31"
+            ]
+        ]
+    },
+    {
+        "id": "efb628585a41dde5",
+        "type": "inject",
+        "z": "3ee57a9d7dc5fae7",
+        "name": "",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 270,
+        "y": 240,
+        "wires": [
+            [
+                "fd27e954b669b5dc"
+            ]
+        ]
+    },
+    {
+        "id": "fd27e954b669b5dc",
+        "type": "change",
+        "z": "3ee57a9d7dc5fae7",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "errorCounter",
+                "pt": "global",
+                "to": "0",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 460,
+        "y": 240,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "df2cb95dca98e944",
+        "type": "switch",
+        "z": "3ee57a9d7dc5fae7",
+        "name": "status code >= 400",
+        "property": "statusCode",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "gte",
+                "v": "400",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 390,
+        "y": 460,
+        "wires": [
+            [
+                "efc97803a70d7841",
+                "d138d4d1284cc210"
+            ]
+        ]
+    },
+    {
+        "id": "32266cc01be545d1",
+        "type": "debug",
+        "z": "3ee57a9d7dc5fae7",
+        "name": "Log console",
+        "active": true,
+        "tosidebar": false,
+        "console": true,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 780,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "efc97803a70d7841",
+        "type": "change",
+        "z": "3ee57a9d7dc5fae7",
+        "name": "inc counter",
+        "rules": [
+            {
+                "t": "set",
+                "p": "errorCounter",
+                "pt": "global",
+                "to": "$globalContext('errorCounter') + 1",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 590,
+        "y": 460,
+        "wires": [
+            [
+                "32266cc01be545d1"
+            ]
+        ]
+    },
+    {
+        "id": "36f439d2ba0ac71a",
+        "type": "link in",
+        "z": "3ee57a9d7dc5fae7",
+        "name": "log cb",
+        "links": [
+            "05457d6efadc3737",
+            "0f90d4602b562160",
+            "14ee8c9739857e6c",
+            "2b11dfa028894e68",
+            "310b29964dbaaca6",
+            "466a424beeab3020",
+            "829323373ce00e9e",
+            "85576a332e06d405",
+            "d10c0e59950649aa",
+            "eac6a267ba1d8eaf",
+            "6e52b4861ef1edcc"
+        ],
+        "x": 205,
+        "y": 460,
+        "wires": [
+            [
+                "df2cb95dca98e944"
+            ]
+        ]
+    },
+    {
+        "id": "d138d4d1284cc210",
+        "type": "change",
+        "z": "3ee57a9d7dc5fae7",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "config",
+                "pt": "msg",
+                "to": "config",
+                "tot": "global"
+            },
+            {
+                "t": "set",
+                "p": "package",
+                "pt": "msg",
+                "to": "package",
+                "tot": "global"
+            },
+            {
+                "t": "set",
+                "p": "url",
+                "pt": "msg",
+                "to": "msg.config.netbox_url & '/api/extras/journal-entries/'",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "headers",
+                "pt": "msg",
+                "to": "{\t    \"Authorization\": \"Token \" & msg.config.netbox_token,\t    \"Accept\": \"application/json\"\t}",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "method",
+                "pt": "msg",
+                "to": "POST",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "result",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t   \"assigned_object_type\": \"netbox_docker_plugin.host\",\t   \"assigned_object_id\": msg.config.id,\t   \"kind\": \"danger\",\t   \"comments\": $string(msg.result)\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 600,
+        "y": 520,
+        "wires": [
+            [
+                "198ae5a8fa13d26b"
+            ]
+        ]
+    },
+    {
+        "id": "198ae5a8fa13d26b",
+        "type": "http request",
+        "z": "3ee57a9d7dc5fae7",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 790,
+        "y": 520,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "b0cac6c15fd048ef",
+        "type": "link in",
+        "z": "3ee57a9d7dc5fae7",
+        "name": "log docker",
+        "links": [
+            "9fc01bf414b956de"
+        ],
+        "x": 415,
+        "y": 520,
+        "wires": [
+            [
+                "d138d4d1284cc210"
+            ]
+        ]
+    }
+]

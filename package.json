@@ -1,0 +1,24 @@
+{
+  "name": "netbox-data-agent",
+  "version": "0.0.1",
+  "description": "Saashup agent for netbox data management",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "keywords": [
+    "saashup nodered data netbox"
+  ],
+  "author": "dzvove855",
+  "homepage": "https://github.com/SaaShup/netbox-data-agent",
+  "bugs": {
+    "url": "https://github.com/SaaShup/netbox-data-agent/issues",
+    "email": "contact@saashup.com"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "express": "*",
+    "node-red": "*"
+  }
+}
